@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Interactive Game Hub</title>
+<title>Ultimate Game Hub</title>
 <style>
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;}
 #topbar{background:white;border-bottom:1px solid #dcdcdc;padding:10px 15px;font-size:18px;font-weight:bold;}
@@ -18,22 +18,9 @@ canvas{border:1px solid #ccc;}
 </head>
 <body>
 
-<div id="topbar">Interactive Game Hub</div>
+<div id="topbar">Ultimate Game Hub</div>
 <div id="container">
-  <div id="menu">
-    <div class="category">Arcade</div>
-    <div class="gamebtn" onclick="loadGame('runner')">Runner</div>
-    <div class="gamebtn" onclick="loadGame('pong')">Pong</div>
-    
-    <div class="category">Creative</div>
-    <div class="gamebtn" onclick="loadGame('pixelArt')">Pixel Art</div>
-    
-    <div class="category">Emulators</div>
-    <div class="gamebtn" onclick="loadGame('nes')">NES Emulator</div>
-    
-    <div class="category">Sandbox</div>
-    <div class="gamebtn" onclick="loadGame('mineclone')">Minecraft Clone</div>
-  </div>
+  <div id="menu"></div>
 
   <div id="gamearea">
     <button id="panic" onclick="panic()">⚪ Panic</button>
@@ -41,28 +28,45 @@ canvas{border:1px solid #ccc;}
   </div>
 </div>
 
+<script src="games.js"></script>
 <script>
-let currentGame=null;
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
-
-// panic function
+// panic button
 function panic(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    window.location.href = "https://schoolslearning.sg"; // replace with SLS link
 }
 
-// dynamic game loader
+// dynamic menu generation
+const menu = document.getElementById('menu');
+for(const game of window.gameList){
+    if(!document.getElementById(game.category)) {
+        const catDiv = document.createElement('div');
+        catDiv.className='category';
+        catDiv.id = game.category;
+        catDiv.innerText=game.category;
+        menu.appendChild(catDiv);
+    }
+    const btn = document.createElement('div');
+    btn.className='gamebtn';
+    btn.innerText = game.name;
+    btn.onclick = ()=>loadGame(game.id);
+    menu.appendChild(btn);
+}
+
+// dynamic loader
+let currentGame = null;
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
 function loadGame(name){
     if(currentGame && currentGame.stop) currentGame.stop();
     ctx.clearRect(0,0,canvas.width,canvas.height);
     if(window.games[name]){
-        currentGame=window.games[name](canvas,ctx);
+        currentGame = window.games[name](canvas,ctx);
     }else{
         ctx.fillText("Game not found",280,200);
     }
 }
 </script>
 
-<script src="games.js"></script>
 </body>
 </html>
