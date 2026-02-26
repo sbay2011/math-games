@@ -82,16 +82,66 @@ addDemo('fnad','Five Nights at Diddys','Horror',function(canvas,ctx){
     return {stop(){}};
 });
 
-// ---------- NES / SNES emulator slots ----------
+// NES Emulator
 addDemo('nes','NES Emulator','Emulators',function(canvas,ctx){
-    ctx.fillStyle='blue';ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='white';ctx.fillText('NES Emulator Demo (Load your ROM)',150,200);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='black';
+    ctx.fillText('NES Emulator: Choose your .nes file',150,200);
+
+    const input = document.createElement('input');
+    input.type='file';
+    input.accept='.nes';
+    input.style.position='absolute';
+    input.style.top='50px';
+    input.style.left='50px';
+    input.onchange = (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev){
+            const buffer = ev.target.result;
+            const nes = new jsnes.NES({onFrame:frame=>{
+                // render NES frame to canvas
+                const imageData = new ImageData(new Uint8ClampedArray(frame.buffer),256,240);
+                ctx.putImageData(imageData,0,0);
+            }});
+            nes.loadROM(new Uint8Array(buffer));
+            nes.start();
+        };
+        reader.readAsArrayBuffer(file);
+    };
+    document.body.appendChild(input);
+
     return {stop(){}};
 });
 
+// SNES Emulator
 addDemo('snes','SNES Emulator','Emulators',function(canvas,ctx){
-    ctx.fillStyle='purple';ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='white';ctx.fillText('SNES Emulator Demo (Load your ROM)',150,200);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='black';
+    ctx.fillText('SNES Emulator: Choose your .smc file',150,200);
+
+    const input = document.createElement('input');
+    input.type='file';
+    input.accept='.smc';
+    input.style.position='absolute';
+    input.style.top='50px';
+    input.style.left='50px';
+    input.onchange = (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev){
+            const buffer = ev.target.result;
+            // snes emulator code here (use JS SNES emulator like snes9x.js)
+            // this will load the ROM and render to canvas
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillText('Loaded SNES ROM (demo)',150,200);
+        };
+        reader.readAsArrayBuffer(file);
+    };
+    document.body.appendChild(input);
+
     return {stop(){}};
 });
 
@@ -104,3 +154,4 @@ for(let i=7;i<=100;i++){
         return {stop(){}};
     });
 }
+
